@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block styles %}
+    <style>
+        body {
+            background-color: #fffffc;
+        }
+
+        .card {
+            color: #fff;
+            background-size: cover;
+            width: 300px;
+            height: 175px;
+            border-radius: 10px;
+            box-shadow: 0px 8px 16px 4px #9E9E9E;
+        }
+
+        .home-img {
+            box-shadow: 0 0 0 0 #9E9E9E;
+        }
+
+        .cold {
+            background-image: url("/static/cold.jpg");
+        }
+
+        .medium-tmp {
+            background-image: url("/static/cloudycold.jpg");
+        }
+
+        .warm {
+            background-image: url("/static/sunny.jpeg");
+        }
+
+        .hot {
+            background-image: url("/static/hot.jpg");
+        }
+
+        .time-font {
+            font-size: 20px;
+        }
+
+        .sm-font {
+            font-size: 8px;
+        }
+
+        .med-font {
+            font-size: 12px;
+        }
+
+        .large-font {
+            font-size: 25px;
+        }
+
+        .whitefont {
+            color: white;
+        }</style>
+{% endblock styles %}
+{% block content %}
+
+
+    <div class="row justify-content-center">
+        {% for data in location %}
+            <div class="col-md-auto">
+            <div class="container-fluid px-1 px-md-4 py-4 mx-auto">
+            <div class="row d-flex justify-content-center px-3">
+            {% if 0 <= (data[3])|int < 10 %}
+                <div class="card cold">
+            {% elif 10 <= data[3]|int < 20 %}
+                <div class="card medium-tmp">
+            {% elif 20<= data[3]|int<30 %}
+                <div class="card warm ">
+            {% elif 30 <= data[3]|int %}
+                <div class="card hot">
+            {% endif %}
+
+        <h2 class="ml-auto mr-4 mt-3 mb-0 large-font"><a href="{{ url_for('weatherloc', id=data[1]) }}"
+                                              class="whitefont" style="text-decoration:none">{{ data[1] }}</a></h2>
+        <h1 class="ml-auto mr-4 large-font">{{ data[3] }}&#176;</h1>
+        <p class="time-font mb-0 ml-4 mt-auto">{{ (data[2]|string)[3:8] }}<span
+                class="sm-font">{{ (data[2]|string)[8:] }}</span></p>
+        <p class="ml-4 mb-4">{{ date }}{{ (data[2]|string)[0:2] }}{{ date2 }}</p>
+        </div>
+        </div>
+        </div>
+        </div>
+        {% endfor %}
+
+        </div>
+        </div>
+        </div>
+    </div>
+{% endblock content %}

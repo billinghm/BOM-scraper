@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="main justify-content-center">
+        <div class="container-fluid justify-content-center">
+            <table class="table table-striped my-2">
+                <thead>
+                {% for header in headers %}
+                    <th scope=col>{{ header }}</th>
+                {% endfor %}
+                </thead>
+                <tbody>
+                {% for data in locations %}
+                    <tr>
+                        <td><a href="{{ url_for('weatherloc', id=data[0]) }}">{{ data[0] }}</a></td>
+                        <td>{{ data[1][0:3] }}{{ month }} {{ data[1][3:] }}</td>
+                        {% for location in data[2:7] %}
+                            <td> {{ location }}</td>
+                        {% endfor %}
+                        {% if data[7] == "-" %}
+                            <td>Clear Skies</td>
+                        {% else %}
+                            <td>{{ data[7] }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

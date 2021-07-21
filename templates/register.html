@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block styles %}
+    <style>
+        .form-signin {
+            width: 100%;
+            max-width: 560px;
+            padding: 15px;
+            margin: auto;
+            padding-top: 30px;
+        }
+
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            background-color: #ffffff;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: -1px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            background-color: #ffffff;
+
+        }
+
+        .form-signin input[type="date"] {
+            margin-bottom: 5px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            background-color: #ffffff;
+        }
+
+        .form-signin input[type="number"] {
+            margin-bottom: 5px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            background-color: #ffffff
+        }
+    </style>
+{% endblock styles %}
+{% block content %}
+    <body class="text-center">
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p></p>
+                    <div class="alert alert-danger" role="alert"><h2>{{ message }}</h2></div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <div class="container-fluid my-2">
+        <main class="form-signin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-person-plus"
+                 viewBox="0 0 16 16">
+                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"></path>
+                <path fill-rule="evenodd"
+                      d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"></path>
+            </svg>
+            <div class="row my-1">
+                <h2 class="mb-3 h3">Sign-Up</h2>
+                <form action="{{ url_for('register') }}" method="post">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="first" name="first"
+                                       placeholder="John">
+                                <label for="first">First Name</label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="last" name="last"
+                                       placeholder="Smith">
+                                <label for="last">Last Name</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="username" name="username"
+                                       placeholder="username">
+                                <label for="username">Username</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="email" name="email"
+                                       placeholder="name@example.com">
+                                <label for="email">Email</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="password">
+                                <label for="password">Password</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <p></p>
+                    <button class="btn w-100 btn-outline-primary btn-lg mb-5" type="submit">Sign-Up</button>
+                    <p>Already have an account? <a href="{{ url_for('login') }}">Sign-in</a></p>
+                </form>
+            </div>
+
+        </main>
+    </div>
+    </body>
+{% endblock content %}

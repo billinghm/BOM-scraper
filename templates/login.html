@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block styles %}
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: auto;
+            padding-top: 30px;
+        }
+
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            background-color: #ffffff;
+                }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            background-color: #ffffff;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+    </style>
+
+{% endblock styles %}
+{% block content %}
+    <body class="text-center dark-theme">
+    <p></p>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger" role="alert"><h2>{{ message }}</h2></div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    <main class="form-signin">
+        <form action="{{ url_for('login') }}" method="post">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor"
+                 class="bi bi-check2-circle" viewBox="0 0 16 16">
+                <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+                <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+            </svg>
+            {#            <img class="mb-4" src="https://getbootstrap.com/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72"#}
+            {#                 height="57">#}
+            <h1 class="h3 mb-3 fw-normal">Log In</h1>
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="username" name="username"
+                       placeholder="username">
+                <label for="username" class="">Username</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="password"
+                       placeholder="password">
+                <label for="password" class="">Password</label>
+            </div>
+
+            <div class="checkbox mb-3">
+            </div>
+            <button class="w-100 btn btn-lg btn-outline-primary" type="submit">Sign in</button>
+            <p></p>
+
+            <p>Dont have an account? <a href="{{ url_for('register') }}">Register</a></p>
+        </form>
+    </main>
+    </body>
+
+{% endblock content %}

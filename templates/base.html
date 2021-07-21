@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    {% block styles %}
+    {% endblock styles %}
+    <style>
+        .navblue {
+            background-color: #cef1fd;
+        }
+    </style>
+    <title>iWeather</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light navblue">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cloud"
+                 viewBox="0 0 16 16">
+                <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"></path>
+            </svg>
+            iWeather
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('weather') }}">Weather</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('locations') }}">Locations</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        Weather Maps
+                    </a>
+                    <ul class="dropdown-menu navblue" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('maps', type='temp') }}">Temperature</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('maps', type='rain') }}">Rain</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('maps', type='wind') }}">Wind</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('maps', type='humid') }}">Humidity</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="d-flex">
+                <input class="form-control me-2" list="datalistOptions" id="search" placeholder="Search" name="search"
+                       onchange="go_to_loc(this.value)">
+                <datalist id="datalistOptions">
+                    {% for data in glob_weather_data %}
+                        <option>{{ data[0] }}</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">
+                    <button type="button" class="btn btn-outline-secondary ms-2 p-1" style="border-radius: 50px">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="2rem" height="2rem" fill="currentColor"
+                             class="bi bi-people"
+                             viewBox="0 0 16 16">
+                            <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"></path>
+                        </svg>
+                    </button>
+                </a>
+            {% else %}
+                <div class="dropdown">
+                    <button type="button" class="btn btn-outline-secondary ms-2 p-1" style="border-radius: 50px"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ current_user.Firstname[0] }}{{ current_user.Surname[0] }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{{ url_for('weather') }}">My Weather</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('maps', type='rain') }}">Rain Map</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{% block content %}
+{% endblock content %}
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+
+<!-- Option 2: Separate Popper and Bootstrap JS -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js" integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT" crossorigin="anonymous"></script>
+-->
+<script>
+    function go_to_loc(weatherloc) {
+        w_loc = weatherloc.split(" - ");
+        window.location.href = '{{ url_for('weather_location') }}' + w_loc[0]
+    }
+</script>
+</body>
+</html>
