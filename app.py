@@ -6,6 +6,26 @@ import dbcon
 import time
 from datetime import date
 import calendar
+from logging.config import dictConfig
+from flask import has_request_context, request
+import time
+
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['wsgi']
+    }
+})
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -69,15 +89,19 @@ def login():
         return render_template('login.html')
     if request.method == 'POST':
         try:
-            my_user = users.query.filter_by(username=request.form['username']).first()
+            user = users.query.filter_by(username=request.form['username']).first()
         except:
+            time.sleep('100')
             flash('An error occurred. Please check username and password and try again')
             return redirect(url_for('login'))
-        if my_user is not None:
-            if check_password_hash(my_user.password, request.form['password']):
-                login_user(my_user)
+        if user is not None:
+            if check_password_hash(user.password, request.form['password']):
+                # ]): print("hi")#
+                login_user(user)
+                app.logger.info('%s logged in successfully', user.username)
                 return redirect(url_for('home'))
             else:
+                app.logger.info('%s failed to log in', user.username)
                 flash('An error occurred. Please check username and password and try ')
                 return redirect(url_for('login'))
         else:
@@ -101,14 +125,16 @@ def register():
         data = sql_new_user(new_user_details, email)
         if data == "Success":
             try:
-                my_user = users.query.filter_by(username=request.form['username']).first()
+                user = users.query.filter_by(username=request.form['username']).first()
             except:
-                my_user = 0
-            if my_user is not None:
-                if check_password_hash(my_user.password, request.form['password']):
-                    login_user(my_user)
+                user = 0
+            if user is not None:
+                if check_password_hash(user.password, request.form['password']):
+                    login_user(user)
+                    app.logger.info('%s logged in successfully', user.username)
                     return redirect(url_for('home'))
                 else:
+                    app.logger.info('%s failed to log in', user.username)
                     flash('An error occured. Please try again')
                     return redirect(url_for('register'))
             else:
@@ -146,7 +172,7 @@ def weather_location():
         return render_template('base.html')
 
 
-@app.route('/weather')
+@app.route('/weather_location')
 def weather():
     date = time.asctime()
     date1 = date[0:8]
@@ -169,9 +195,9 @@ def about():
     return render_template('about.html')
 
 
-@app.route('/map/<type>')
-def maps(type):
-    return render_template('rain_map.html', type=type)
+@app.route('/map/<type>/<lat>/<long>/<zoom>')
+def maps(type, lat, long, zoom):
+    return render_template('rain_map.html', type=type, lat=lat, long=long, zoom=zoom)
 
 
 # ----------------------SQL Queries---------------------- #
@@ -198,7 +224,8 @@ def sql_retrieve_location_name(name):
     con = dbcon.connect()
     c = con.cursor()
     sql_code = """SELECT name AS 'Location', date AS 'Last Checked', temp AS 'Air Temperature', 
-        wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction', humidity AS 'Relative Humidity', rain AS 'Rain', cloud AS 'Cloud'
+        wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction', humidity AS 'Relative Humidity', rain AS 'Rain',
+         cloud AS 'Cloud', lat AS 'Latitude', long AS 'Longitude'
          FROM locations WHERE UPPER(name) = UPPER(?) AND UPPER(name) NOT LIKE 'PORTABLE%'"""
     c.execute(sql_code, (name,))
     locations = c.fetchall()

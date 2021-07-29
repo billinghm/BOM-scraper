@@ -29,6 +29,7 @@ def check_locations():
 def scrape_urls():
     target_url = "http://www.bom.gov.au/qld/observations/qldall.shtml"
     page = requests.get(target_url, headers=headers)
+    print(page)
     page_data = BeautifulSoup(page.text, 'html.parser')
     a_tags = page_data.find_all('a', href=True)
     href_tags = [i['href'] for i in a_tags]
@@ -54,6 +55,8 @@ def retrieve_names(url):
         det_list.append(resp['rel_hum'])
         det_list.append(resp['rain_trace'])
         det_list.append(resp['cloud'])
+        det_list.append(resp['lat'])
+        det_list.append(resp['lon'])
         det_list.append(name)
     else:
         up_list.append(resp['wmo'])
@@ -64,6 +67,8 @@ def retrieve_names(url):
         up_list.append(resp['rel_hum'])
         up_list.append(resp['rain_trace'])
         up_list.append(resp['cloud'])
+        up_list.append(resp['lat'])
+        up_list.append(resp['lon'])
         up_list.append(name)
 
 
@@ -84,22 +89,23 @@ if __name__ == "__main__":
     c = con.cursor()
     # for every item in the list of names and id's, if the number is even (names), insert it and the item next to it into the database
     for x in range(len(det_list)):
-        if x % 9 == 0:
-            data = tuple(det_list[x + l] for l in range(0, 9))
+        if x % 11 == 0:
+            data = tuple(det_list[x + l] for l in range(0, 11))
             print(data)
             c.execute(
-                """INSERT INTO locations (id, date, temp, wind_speed, wind_dir, humidity, rain, cloud, name) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO locations (id, date, temp, wind_speed, wind_dir, humidity, rain, cloud, lat, long, name) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 data)
             con.commit()
         else:
             pass
     for p in range(len(up_list)):
-        if p % 9 == 0:
-            data = tuple(up_list[p + l] for l in range(0, 9))
+        if p % 11 == 0:
+            data = tuple(up_list[p + l] for l in range(0, 11))
             name = up_list[p]
             c.execute("""UPDATE locations 
-            SET id = ?, date =?, temp=?, wind_speed=?, wind_dir=?, humidity=?, rain=?, cloud=? WHERE name = ?""",
+            SET id = ?, date =?, temp=?, wind_speed=?, wind_dir=?, humidity=?, rain=?, cloud=?, lat = ?, long = ? WHERE name = ?""",
                       data)
             con.commit()
         else:
             pass
+    c.execute("""SELECT *""")

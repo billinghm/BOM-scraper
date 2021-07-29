@@ -48,10 +48,18 @@
                         Weather Maps
                     </a>
                     <ul class="dropdown-menu navblue" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ url_for('maps', type='temp') }}">Temperature</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('maps', type='rain') }}">Rain</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('maps', type='wind') }}">Wind</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('maps', type='humid') }}">Humidity</a></li>
+                        <li><a class="dropdown-item"
+                               href="{{ url_for('maps', type='temp', lat="-22.485", long="149.443", zoom="5") }}">Temperature</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                               href="{{ url_for('maps', type='rain', lat="-22.485", long="149.443", zoom="5") }}">Rain</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                               href="{{ url_for('maps', type='wind', lat="-22.485", long="149.443", zoom="5") }}">Wind</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                               href="{{ url_for('maps', type='humid', lat="-22.485", long="149.443", zoom="5") }}">Humidity</a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -82,7 +90,9 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
                         <li><a class="dropdown-item" href="{{ url_for('weather') }}">My Weather</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('maps', type='rain') }}">Rain Map</a></li>
+                        <li><a class="dropdown-item"
+                               href="{{ url_for('maps', type="rain", lat="-22.485", long="149.443", zoom="5") }}">Rain
+                            Map</a></li>
                         <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
                     </ul>
                 </div>

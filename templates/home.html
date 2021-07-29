@@ -82,7 +82,7 @@
                     <form action="{{ url_for('locations') }}">
                         <button type="submit" class="btn btn-primary btn-lg px-4 me-md-2">Weather</button>
                     </form>
-                    <form action="{{ url_for('maps', type="rain") }}">
+                    <form action="{{ url_for('maps', type="rain", lat="-22.485", long="149.443", zoom="5") }}">
                         <button type="submit" class="btn btn-outline-secondary btn-lg px-4">Maps</button>
                     </form>
                 </div>

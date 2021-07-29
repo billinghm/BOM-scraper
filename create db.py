@@ -19,7 +19,9 @@ wind_speed REAL,
 wind_dir TEXT,
 humidity REAL, 
 rain REAL,
-cloud TEXT
+cloud TEXT,
+lat TEXT,
+long TEXT
 
 )""")
 # c.execute("DROP TABLE users")
@@ -32,6 +34,6 @@ Surname TEXT,
 password TEXT
 )""")
 
-c.execute("""SELECT * FROM users""")
+c.execute("""SELECT * FROM locations""")
 data = c.fetchall()
 print(data)
