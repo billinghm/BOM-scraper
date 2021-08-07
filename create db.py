@@ -31,9 +31,20 @@ username TEXT,
 email TEXT,
 Firstname TEXT,
 Surname TEXT,
-password TEXT
+password TEXT,
+location TEXT
 )""")
-
-c.execute("""SELECT * FROM locations""")
-data = c.fetchall()
-print(data)
+c.execute("""CREATE TABLE IF NOT EXISTS user_locations(
+id INTEGER,
+location TEXT
+)""")
+# c.execute("""SELECT * FROM users""")
+# data = c.fetchall()
+# print(data)
+query = """SELECT locations.lat, locations.long FROM locations 
+    INNER JOIN users ON users.location = locations.name 
+    WHERE users.id = ? LIMIT 1"""
+c.execute(query, (1,)
+    )
+new_data = c.fetchall()
+print(new_data)

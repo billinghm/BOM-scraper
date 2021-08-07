@@ -89,7 +89,7 @@
                         {{ current_user.Firstname[0] }}{{ current_user.Surname[0] }}
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark">
-                        <li><a class="dropdown-item" href="{{ url_for('weather') }}">My Weather</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('update_user_details') }}">My Details</a></li>
                         <li><a class="dropdown-item"
                                href="{{ url_for('maps', type="rain", lat="-22.485", long="149.443", zoom="5") }}">Rain
                             Map</a></li>

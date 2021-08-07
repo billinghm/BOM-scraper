@@ -6,7 +6,7 @@
             max-width: 560px;
             padding: 15px;
             margin: auto;
-            padding-top: 30px;
+            padding-top: 10px;
         }
 
         .form-signin input[type="text"] {
@@ -25,14 +25,14 @@
         }
 
         .form-signin input[type="date"] {
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
             background-color: #ffffff;
         }
 
         .form-signin input[type="number"] {
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             border-top-left-radius: 0;
             border-top-right-radius: 0;
             background-color: #ffffff
@@ -62,7 +62,7 @@
             <div class="row my-1">
                 <h2 class="mb-3 h3">Sign-Up</h2>
                 <form action="{{ url_for('register') }}" method="post">
-                    <div class="row g-3">
+                    <div class="row g-2">
                         <div class="col-sm-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="first" name="first"
@@ -97,6 +97,16 @@
                                 <input type="password" class="form-control" id="password" name="password"
                                        placeholder="password">
                                 <label for="password">Password</label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <select id="location" class="form-control" name="location">
+                                    <option selected>Preferred Location</option>
+                                    {% for data in glob_weather_data %}
+                                        <option>{{ data[0] }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
 

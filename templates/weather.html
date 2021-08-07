@@ -17,6 +17,9 @@
         .home-img {
             box-shadow: 0 0 0 0 #9E9E9E;
         }
+        .notemp {
+            background-image: url("/static/sunsetcalm.jpg");
+        }
 
         .cold {
             background-image: url("/static/cold.jpg");
@@ -62,7 +65,9 @@
             <div class="col-md-auto">
             <div class="container-fluid px-1 px-md-4 py-4 mx-auto">
             <div class="row d-flex justify-content-center px-3">
-            {% if 0 <= (data[3])|int < 10 %}
+            {% if data[3] == 'N/A' %}
+            <div class="card notemp">
+            {% elif 0 <= (data[3])|int < 10 %}
                 <div class="card cold">
             {% elif 10 <= data[3]|int < 20 %}
                 <div class="card medium-tmp">

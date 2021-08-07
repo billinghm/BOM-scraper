@@ -10,7 +10,6 @@ from logging.config import dictConfig
 from flask import has_request_context, request
 import time
 
-
 dictConfig({
     'version': 1,
     'formatters': {'default': {
@@ -77,10 +76,16 @@ def weather_search_names():
 @app.route('/home')
 def home():
     date = time.asctime()
-    date1 = date[0:8]
-    date2 = date[19:]
+    date = [date[0:8], date[19:]]
+    try:
+        user_id = current_user.id
+        user_location = user_location_title(user_id)
+    except:
+        user_location = 1
     location = title_location()
-    return render_template("home.html", location=location, date=date1, date2=date2)
+    hot_warning = hottest_location()
+    return render_template("home.html", location=location, date=date, user_location=user_location,
+                           hot_warning=hot_warning)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -91,12 +96,11 @@ def login():
         try:
             user = users.query.filter_by(username=request.form['username']).first()
         except:
-            time.sleep('100')
+            time.sleep(10)
             flash('An error occurred. Please check username and password and try again')
             return redirect(url_for('login'))
         if user is not None:
             if check_password_hash(user.password, request.form['password']):
-                # ]): print("hi")#
                 login_user(user)
                 app.logger.info('%s logged in successfully', user.username)
                 return redirect(url_for('home'))
@@ -115,14 +119,20 @@ def login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == "POST":
-        new_user_details = (
-            request.form['email'],
-            request.form['username'],
-            request.form['first'],
-            request.form['last'],
-            generate_password_hash(request.form['password']))
-        email = request.form['email']
-        data = sql_new_user(new_user_details, email)
+        loc = request.form['location']
+        if loc == "Preferred Location":
+            flash('Please choose a valid location')
+            return redirect(url_for('register'))
+        else:
+            new_user_details = (
+                request.form['email'],
+                request.form['username'],
+                request.form['first'],
+                request.form['last'],
+                generate_password_hash(request.form['password']),
+                request.form['location'])
+            email = request.form['email']
+            data = sql_new_user(new_user_details, email)
         if data == "Success":
             try:
                 user = users.query.filter_by(username=request.form['username']).first()
@@ -145,6 +155,25 @@ def register():
             return redirect(url_for('register'))
     else:
         return render_template('register.html')
+
+
+@app.route('/update', methods=['GET', 'POST'])
+@login_required
+def update_user_details():
+    if request.method == 'POST':
+        user_id = current_user.id
+        user_details = (request.form['firstname'],
+                        request.form['surname'],
+                        request.form['username'],
+                        request.form['email'],
+                        request.form['location'],
+                        user_id)
+        sql_update_user_details(user_details)
+        return redirect(url_for('home'))
+    else:
+        user_id = current_user.id
+        user_details = sql_retrieve_user_details(user_id)
+        return render_template("update_details.html", user_details=user_details)
 
 
 @app.route('/logout')
@@ -200,7 +229,7 @@ def maps(type, lat, long, zoom):
     return render_template('rain_map.html', type=type, lat=lat, long=long, zoom=zoom)
 
 
-# ----------------------SQL Queries---------------------- #
+# -----------------------------------SQL Queries------------------------------------------------ #
 def title_location():
     con = dbcon.connect()
     c = con.cursor()
@@ -211,19 +240,53 @@ def title_location():
     return (locations)
 
 
+def user_location_title(id):
+    con = dbcon.connect()
+    c = con.cursor()
+    query = """SELECT locations.lat, locations.long FROM locations 
+        INNER JOIN users ON users.location = locations.name 
+        WHERE users.id = ? LIMIT 1"""
+    c.execute(query, (id,))
+    new_data = c.fetchall()
+    return new_data
+
+
+def hottest_location():
+    con = dbcon.connect()
+    c = con.cursor()
+    sql_code = """SELECT name, temp FROM locations ORDER BY temp DESC LIMIT 1"""
+    c.execute(sql_code)
+    data = c.fetchall()
+    return data
+
+
+def sql_retrieve_weather_name():
+    connie = dbcon.connect()
+    c = connie.cursor()
+    sql_code = "SELECT name FROM locations ORDER BY name"
+    c.execute(sql_code)
+    weather_data = c.fetchall()
+    return weather_data
+
+
 def all_location():
     con = dbcon.connect()
     c = con.cursor()
     c.execute(
-        """SELECT * FROM locations WHERE UPPER(name) NOT LIKE 'PORTABLE%' ORDER BY name""")
+        """SELECT id, name AS 'Location', date AS 'Last Checked', 
+    CASE WHEN temp  IS NULL THEN 'N/A' ELSE temp END AS 'Air Temperature', 
+        wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction', humidity AS 'Relative Humidity', rain AS 'Rain',
+         cloud AS 'Cloud', lat AS 'Latitude', long AS 'Longitude'
+         FROM locations WHERE UPPER(name) NOT LIKE 'PORTABLE%' ORDER BY name""")
     locations = c.fetchall()
-    return (locations)
+    return locations
 
 
 def sql_retrieve_location_name(name):
     con = dbcon.connect()
     c = con.cursor()
-    sql_code = """SELECT name AS 'Location', date AS 'Last Checked', temp AS 'Air Temperature', 
+    sql_code = """SELECT name AS 'Location', date AS 'Last Checked', 
+    CASE WHEN temp  IS NULL THEN 'N/A' ELSE temp END AS 'Air Temperature', 
         wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction', humidity AS 'Relative Humidity', rain AS 'Rain',
          cloud AS 'Cloud', lat AS 'Latitude', long AS 'Longitude'
          FROM locations WHERE UPPER(name) = UPPER(?) AND UPPER(name) NOT LIKE 'PORTABLE%'"""
@@ -239,9 +302,10 @@ def sql_retreieve_locations():
     con = dbcon.connect()
     c = con.cursor()
     c.execute(
-        """SELECT name AS 'Location', date AS 'Last Checked', temp AS 'Air Temperature', 
-        wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction', humidity AS 'Relative Humidity', rain AS 'Rain', cloud AS 'Cloud' 
-         FROM locations WHERE UPPER(name) NOT LIKE 'PORTABLE%' ORDER BY name""")
+        """SELECT name AS 'Location', date AS 'Last Checked', CASE WHEN temp  IS NULL THEN 'N/A' ELSE temp 
+        END AS 'Air Temperature', wind_speed AS 'Wind Speed', wind_dir AS 'Wind Direction',
+        humidity AS 'Relative Humidity', rain AS 'Rain', cloud AS 'Cloud' 
+        FROM locations WHERE UPPER(name) NOT LIKE 'PORTABLE%' ORDER BY name""")
     locations = c.fetchall()
 
     headers = [i[0] for i in c.description]
@@ -249,7 +313,6 @@ def sql_retreieve_locations():
     return (locations, headers)
 
 
-# -----------------------------------SQL Queries------------------------------------------------ #
 def sql_new_user(new_user_details, email):
     connie = dbcon.connect()
     c = connie.cursor()
@@ -258,21 +321,31 @@ def sql_new_user(new_user_details, email):
     emails = c.fetchall()
     if emails == []:
         # If new user is unique then insert new user into the database
-        c.execute("""INSERT INTO users(email, username, Firstname, Surname, password) VALUES(?, ?, ?, ?, ?)""",
-                  new_user_details)
+        c.execute(
+            """INSERT INTO users(email, username, Firstname, Surname, password, location) VALUES(?, ?, ?, ?, ?, ?)""",
+            new_user_details)
         connie.commit()
         return ("Success")
     else:
         return ("Fail")
 
 
-def sql_retrieve_weather_name():
-    connie = dbcon.connect()
-    c = connie.cursor()
-    sql_code = "SELECT name FROM locations ORDER BY name"
-    c.execute(sql_code)
-    weather_data = c.fetchall()
-    return weather_data
+def sql_retrieve_user_details(user_id):
+    con = dbcon.connect()
+    c = con.cursor()
+    sql_query = """SELECT Firstname, Surname, username, email, location FROM users WHERE id = ?"""
+    c.execute(sql_query, (user_id,))
+    details = c.fetchall()
+    return details
+
+
+def sql_update_user_details(user_details):
+    con = dbcon.connect()
+    c = con.cursor()
+    sql_query = """UPDATE users SET Firstname = ?, Surname = ?, username = ?, email = ?, location = ? WHERE id = ? """
+    c.execute(sql_query, user_details)
+    con.commit()
+    return "Success"
 
 
 if __name__ == "__main__":
