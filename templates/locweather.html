@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% block styles %}
+    <style>
+        body {
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif
+        }
+
+        p {
+            margin-bottom: 1vh
+        }
+
+        .container {
+            justify-content: center
+        }
+
+        .card {
+            border: 1.5vh solid #000000;
+            max-width: 800px;
+            border-radius: 2vh;
+            margin: auto
+        }
+
+        .left {
+            background-color: rgb(243, 243, 243);
+            padding: 1rem;
+            margin: 0
+        }
+
+        .row,
+        .col {
+            margin: 0
+        }
+
+        .top {
+            text-align: center;
+            font-size: 0.65rem;
+            padding: 2vh
+        }
+
+        @media (max-width: 768px) {
+            .top {
+                text-align: center;
+                font-size: 0.5rem;
+                padding: 1vh
+            }
+
+            .top .col {
+                padding: 0 0.5vh
+            }
+        }
+
+        .temp {
+            padding: 8vh;
+            text-align: center;
+            font-size: 15vh;
+            font-weight: bold
+        }
+
+        @media (max-width: 768px) {
+            .temp {
+                padding: 3vh 0vh;
+                text-align: center;
+                font-size: 8vh;
+                font-weight: bold
+            }
+        }
+
+        @media (min-height: 812px) and (min-width: 769px) {
+            .temp {
+                padding: 3vh 0vh;
+                text-align: center;
+                font-size: 8vh;
+                font-weight: bold
+            }
+        }
+
+        .time {
+            align-self: center;
+            font-size: 0.8rem
+        }
+
+        @media (max-width: 768px) {
+            .time {
+                align-self: center;
+                font-size: 0.8rem
+            }
+
+            .time h2 {
+                font-size: 0.9rem
+            }
+
+            .col-5 {
+                padding: 1vh 0
+            }
+        }
+
+        .bottom .row {
+            justify-content: center;
+            font-size: 0.75rem;
+            justify-content: center;
+        }
+
+        .bottom .col {
+            padding: 3vh 0.3vw;
+            margin: 2vh;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .bottom .col {
+                padding: 3vh 0.1vw;
+                margin: 0.03rem
+            }
+        }
+
+        @media (min-height: 812px) and (min-width: 769px) {
+            .bottom .col {
+                padding: 3vh 0.1vw;
+                margin: 0.03rem
+            }
+        }
+
+        .border {
+            border-radius: 2vh
+        }
+
+
+        .cloudy {
+            background-image: url(/static/mountaincloud.jpg);
+            background-size: cover;
+        {#width: 1920px;#}{#height: 1080px;#}{##}
+
+        }
+
+        .head {
+            font-size: 15px;
+        }
+
+        .normhref {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+{% endblock styles %}
+{% block content %}
+    {% for item in data %}
+        <body class="cloudy">
+        <div class="container py-2">
+            <div class="card">
+                <div class="row">
+                    <div class="col-12 left">
+                        <div class="row top">
+                            <div class="col head">{{ item[0] }}</div>
+                            <div class="col head">{{ item[1][0:3] }}{{ month }} {{ item[1][3:] }}</div>
+                            <div class="col head"><a
+                                    href="{{ url_for('maps', type="temperature", lat=item[8], long=item[9], zoom="10") }}"
+                                    class="normhref">Temperature Map</a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-7 temp">{{ item[2] }}&deg;</div>
+                            <div class="col-5 time">
+                                <h2><b>{{ day }}</b></h2>
+                                {% if item[7] == "-" %}
+                                    <p>Clear Skies</p>
+                                {% else %}
+                                    <p>{{ item[7] }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <hr>
+                        </div>
+                        <div class="row bottom">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-auto">
+                                <div class="row">Wind Speed</div>
+                                <div class="row"><b>{{ item[3] }}</b></div>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Wind Direction</div>
+                                <div class="row"><b>{{ item[4] }}</b></div>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Rel Humid</div>
+                                <div class="row"><b>{{ item[5] }}</b></div>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Rainfall</div>
+                                <div class="row"><b>{{ item[6] }}</b></div>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Clouds</div>
+                                {% if item[7] == "-" %}
+                                <div class="row"><b>Clear Skies</b></div>
+                                {% else %}
+                                <div class="row"><b>{{ item[7] }}</b></div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Latitude</div>
+                                <div class="row"><b>{{ item[8] }}</b></div>
+                            </div>
+                            <div class="col-md-auto">
+                                <div class="row">Longitude</div>
+                                <div class="row"><b>{{ item[9] }}</b></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </body>
+    {% endfor %}
+{% endblock content %}

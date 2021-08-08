@@ -1,11 +1,8 @@
 import threading
-import time
 import concurrent.futures
 import requests
-import urllib
 from bs4 import BeautifulSoup
 import ssl
-import json
 import dbcon
 
 ssl.CERT_REQUIRED = 0
@@ -41,9 +38,6 @@ def scrape_urls():
             location_url.append(data)
     return location_url
 
-
-field_list = ['wmo', 'local_date_time', 'air_temp', 'wind_spd_kmh', 'wind_dir', 'rel_hum', 'rain_trace', 'cloud',
-              'lat', 'lon']
 
 def retrieve_names(url):
     data = requests.get(url, headers=headers)

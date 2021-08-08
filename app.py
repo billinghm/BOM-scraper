@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import dbcon
-import time
 from datetime import date
 import calendar
 from logging.config import dictConfig
@@ -217,11 +216,6 @@ def weatherloc(id):
     curr_date = date.today()
     day = calendar.day_name[curr_date.weekday()]
     return render_template("locweather.html", data=data, headers=headers, month=month, day=day)
-
-
-@app.route('/about')
-def about():
-    return render_template('about.html')
 
 
 @app.route('/map/<type>/<lat>/<long>/<zoom>')
